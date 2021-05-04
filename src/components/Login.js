@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 async function loginUser(credentials) {
-  return fetch("https://localhost:8080/login", {
+  return fetch("https://ivzj3.csb.app/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -37,6 +37,7 @@ export default function Login({ setToken }) {
       userName,
       password
     });
+    debugger;
     setToken(token);
   };
 
