@@ -18,17 +18,54 @@ const useStyles = makeStyles((theme) => ({
 export default function Login() {
   const [isLogged, setIsLogged] = useState(false);
   const [userId, setUserId] = useState("");
-  const [UserPassword, setPassword] = useState("");
+  const [userPassword, setPassword] = useState("");
+  const [errors, setErrors] = useState({ emailError: "", passwordError: "" });
 
   const classes = useStyles();
+  const handleOnBlur = (event) => {
+    let errors = {};
+    if (!userId) {
+      errors.emailError = "Required";
+    } else if (!/\S+@\S+\.\S+/.test(userId)) {
+      errors.emailError = "Invalid email address";
+    }
 
+    const passwordRegex = /(?=.*[0-9])/;
+    if (!userPassword) {
+      errors.passwordError = "Required";
+    } else if ((userPassword.length > 4) | (userPassword.length < 4)) {
+      errors.passwordError = "Password must be 4 characters.";
+    } else if (!passwordRegex.test(userPassword)) {
+      errors.passwordError = "Invalida password. Must contain one number";
+    }
+    setErrors(errors);
+    console.log(JSON.stringify(errors));
+  };
   const login = (event) => {
     let user_id = userId;
-    let password = UserPassword;
+    let password = userPassword;
 
-    if (user_id === "admin" && password === "123") {
+    if (user_id === "ram@gmail.com" && password === "ram9") {
       localStorage.setItem("token", "T");
       setIsLogged(!isLogged);
+    } else {
+      let errors = {};
+      if (!user_id) {
+        errors.emailError = "Required";
+      } else if (!/\S+@\S+\.\S+/.test(user_id)) {
+        errors.emailError = "Invalid email address";
+      }
+
+      const passwordRegex = /(?=.*[0-9])/;
+      if (!password) {
+        errors.passwordError = "Required";
+      } else if ((password.length > 4) | (password.length < 4)) {
+        errors.passwordError = "Password must be 4 characters.";
+      } else if (!passwordRegex.test(password)) {
+        errors.passwordError = "Invalida password. Must contain one number";
+      }
+      setErrors(errors);
+      console.log(JSON.stringify(errors));
     }
     event.preventDefault();
   };
@@ -59,7 +96,10 @@ export default function Login() {
               required
               margin="normal"
               fullWidth
+              error={errors && errors.emailError}
+              helperText={errors && errors.emailError}
               onChange={(e) => setUserId(e.target.value)}
+              onBlur={handleOnBlur}
             />
             <TextField
               type="password"
@@ -70,7 +110,10 @@ export default function Login() {
               required
               margin="normal"
               fullWidth
+              error={errors && errors.passwordError}
+              helperText={errors && errors.passwordError}
               onChange={(e) => setPassword(e.target.value)}
+              onBlur={handleOnBlur}
             />
             <Button
               type="submit"
