@@ -2,8 +2,8 @@ import { Grid, Typography, Avatar, TextField, Button } from "@material-ui/core";
 import { Lock } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import { pink } from "@material-ui/core/colors";
-import PropTypes from "prop-types";
 import { useState } from "react";
+import { Redirect } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   pink: {
@@ -15,31 +15,27 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-async function loginUser(credentials) {
-  return fetch("https://ivzj3.csb.app/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(credentials)
-  }).then((data) => data.json());
-}
-
-export default function Login({ setToken }) {
-  const [userName, setUserName] = useState();
-  const [password, setPassword] = useState();
+export default function Login() {
+  const [isLogged, setIsLogged] = useState(false);
+  const [userId, setUserId] = useState("");
+  const [UserPassword, setPassword] = useState("");
 
   const classes = useStyles();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const token = await loginUser({
-      userName,
-      password
-    });
-    debugger;
-    setToken(token);
+  const login = (event) => {
+    let user_id = userId;
+    let password = UserPassword;
+
+    if (user_id === "admin" && password === "123") {
+      localStorage.setItem("token", "T");
+      setIsLogged(!isLogged);
+    }
+    event.preventDefault();
   };
+
+  if (localStorage.getItem("token")) {
+    return <Redirect to="/" />;
+  }
 
   return (
     <Grid container justify="center">
@@ -53,7 +49,7 @@ export default function Login({ setToken }) {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <form noValidate autoComplete="off" onSubmit={handleSubmit}>
+          <form noValidate autoComplete="off" onSubmit={login}>
             <TextField
               type="email"
               id="email"
@@ -63,7 +59,7 @@ export default function Login({ setToken }) {
               required
               margin="normal"
               fullWidth
-              onChange={(e) => setUserName(e.target.value)}
+              onChange={(e) => setUserId(e.target.value)}
             />
             <TextField
               type="password"
@@ -92,7 +88,3 @@ export default function Login({ setToken }) {
     </Grid>
   );
 }
-
-Login.propTypes = {
-  setToken: PropTypes.func.isRequired
-};
