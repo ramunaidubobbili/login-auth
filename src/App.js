@@ -1,27 +1,35 @@
 import { Container, CssBaseline } from "@material-ui/core";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Redirect,
+  Switch
+} from "react-router-dom";
 
 import Login from "./components/Login";
 import Dashboard from "./components/Dashboard";
-import Preferences from "./components/Preferences";
-import useToken from "./components/useToken";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
-  const { token, setToken } = useToken();
-
-  if (!token) {
-    return <Login setToken={setToken} />;
-  }
   return (
     <Container component="main">
       <CssBaseline />
-      <BrowserRouter>
+      <Router>
         <Switch>
-          {/* <Route path="" component={Login} /> */}
-          <Route path="/dashboard" component={Dashboard} />
-          <Route path="/prefrences" component={Preferences} />
+          <Route path="/login">
+            <Login />
+          </Route>
+          <ProtectedRoute path="/dashboard">
+            <Dashboard />
+          </ProtectedRoute>
+          <Route exact path="/">
+            <Redirect exact from="/" to="dashboard" />
+          </Route>
+          <Route path="*">
+            <Redirect from="/" to="dashboard" />
+          </Route>
         </Switch>
-      </BrowserRouter>
+      </Router>
     </Container>
   );
 }
